@@ -130,7 +130,7 @@ def read_and_generate_dataset(graph_signal_matrix_filename,
     data_seq = np.load(graph_signal_matrix_filename)['data']  # (sequence_length, num_of_vertices, num_of_features)
 
     all_samples = []
-    for idx in range(data_seq.shape[0]):
+    for idx in range(2016, data_seq.shape[0]):
         sample = get_sample_indices(data_seq, num_of_weeks, num_of_days,
                                     num_of_hours, idx, num_for_predict,
                                     points_per_hour)
@@ -171,6 +171,7 @@ def read_and_generate_dataset(graph_signal_matrix_filename,
                       for i in zip(*all_samples[split_line1: split_line2])]
     testing_set = [np.concatenate(i, axis=0)
                    for i in zip(*all_samples[split_line2:])]
+
 
     train_x = np.concatenate(training_set[:-2], axis=-1)  # (B,N,F,T')
     val_x = np.concatenate(validation_set[:-2], axis=-1)
@@ -239,6 +240,7 @@ def read_and_generate_dataset(graph_signal_matrix_filename,
     return all_data
 
 
+
 def normalization(train, val, test):
     '''
     Parameters
@@ -300,4 +302,4 @@ graph_signal_matrix_filename = data_config['graph_signal_matrix_filename']
 data = np.load(graph_signal_matrix_filename)
 data['data'].shape
 
-all_data = read_and_generate_dataset(graph_signal_matrix_filename, 0, 0, num_of_hours, num_for_predict, points_per_hour=points_per_hour, save=True)
+all_data = read_and_generate_dataset(graph_signal_matrix_filename, num_of_weeks, num_of_days, num_of_hours, num_for_predict, points_per_hour=points_per_hour, save=True)
