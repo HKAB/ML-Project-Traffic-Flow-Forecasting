@@ -265,9 +265,9 @@ class ASTGCN_full_submodule(nn.Module):
         self.d_model = ASTGCN_submodule(DEVICE, nb_block, in_channels, K, nb_chev_filter, nb_time_filter, time_strides, cheb_polynomials, num_for_predict, len_input, num_of_vertices)
         self.w_model = ASTGCN_submodule(DEVICE, nb_block, in_channels, K, nb_chev_filter, nb_time_filter, time_strides, cheb_polynomials, num_for_predict, len_input, num_of_vertices)
 
-        self.W_h = torch.zeros(num_for_predict, requires_grad=True)
-        self.W_d = torch.zeros(num_for_predict, requires_grad=True)
-        self.W_w = torch.zeros(num_for_predict, requires_grad=True)
+        self.W_h = torch.zeros(num_for_predict, requires_grad=True, device=DEVICE)
+        self.W_d = torch.zeros(num_for_predict, requires_grad=True, device=DEVICE)
+        self.W_w = torch.zeros(num_for_predict, requires_grad=True, device=DEVICE)
 
         nn.init.uniform_(self.W_h)
         nn.init.uniform_(self.W_d)

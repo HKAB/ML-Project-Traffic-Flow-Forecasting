@@ -130,6 +130,8 @@ def read_and_generate_dataset(graph_signal_matrix_filename,
     data_seq = np.load(graph_signal_matrix_filename)['data']  # (sequence_length, num_of_vertices, num_of_features)
 
     all_samples = []
+    # To compare ASTGCN with ASTGCN_full, we need to skip 2016 (= 1 week) first timestamps,
+    # as we need last week information in ASTGCN_full
     for idx in range(2016, data_seq.shape[0]):
         sample = get_sample_indices(data_seq, num_of_weeks, num_of_days,
                                     num_of_hours, idx, num_for_predict,
