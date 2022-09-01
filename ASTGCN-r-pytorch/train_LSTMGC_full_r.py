@@ -9,7 +9,7 @@ from time import time
 import shutil
 import argparse
 import configparser
-from model.LSTMGC_r import make_model
+from model.LSTMGC_full_r import make_model
 from lib.utils import load_fullwhd_graphdata_channel1, get_adjacency_matrix, compute_val_loss_astgcn_full, predict_and_save_results_astgcn_full
 from tensorboardX import SummaryWriter
 from lib.metrics import masked_mape_np,  masked_mae,masked_mse,masked_rmse

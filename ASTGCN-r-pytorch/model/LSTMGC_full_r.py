@@ -30,6 +30,7 @@ class GraphConv(nn.Module):
     """
     def __init__(
         self,
+        DEVICE,
         in_feat,
         out_feat,
         graph_info: GraphInfo,
@@ -43,8 +44,9 @@ class GraphConv(nn.Module):
         self.graph_info = graph_info
         self.aggregation_type = aggregation_type
         self.combination_type = combination_type
-        self.weight = Variable(torch.nn.init.xavier_uniform_(torch.Tensor(in_feat, out_feat)),requires_grad=True)
+        self.weight = Variable(torch.nn.init.xavier_uniform_(torch.Tensor(in_feat, out_feat)),requires_grad=True).to(DEVICE)
         self.activation = activation
+        self.DEVICE = DEVICE
     def aggregate(self, neighbour_representations: torch.Tensor):
         aggregation_func = {
             "sum": self.unsorted_segment_sum,
@@ -80,13 +82,13 @@ class GraphConv(nn.Module):
         # segment_ids is a 1-D tensor repeat it to have the same shape as data
         
         if len(segment_ids.shape) == 1:
-            s = torch.prod(torch.tensor(data.shape[1:])).long()
+            s = torch.prod(torch.tensor(data.shape[1:])).long().to(self.DEVICE)
             segment_ids = segment_ids.repeat_interleave(s).view(segment_ids.shape[0], *data.shape[1:])
     
         assert data.shape == segment_ids.shape, "data.shape and segment_ids.shape should be equal"
     
         shape = [num_segments] + list(data.shape[1:])
-        tensor = torch.zeros(*shape).scatter_add(0, segment_ids, data.float())
+        tensor = torch.zeros(*shape).to(self.DEVICE).scatter_add(0, segment_ids, data.float()).to(self.DEVICE)
         tensor = tensor.type(data.dtype)
         return tensor
     def unsorted_segment_mean(self, data, segment_ids, num_segments):
@@ -110,7 +112,7 @@ class GraphConv(nn.Module):
         # print(segment_ids.max())
         # assert all([i in data.shape for i in segment_ids.shape]), "segment_ids.shape should be a prefix of data.shape"
         if len(segment_ids.shape) == 1:
-            s = torch.prod(torch.tensor(data.shape[1:])).long()
+            s = torch.prod(torch.tensor(data.shape[1:])).long().to(self.DEVICE)
             segment_ids = segment_ids.repeat_interleave(s).view(segment_ids.shape[0], *data.shape[1:])
         output = torch.gather(data, 0, segment_ids)
         return output
@@ -156,7 +158,6 @@ class GraphConv(nn.Module):
         nodes_representation = self.compute_nodes_representation(x)
         aggregated_messages = self.compute_aggregated_messages(x)
         return self.update(nodes_representation, aggregated_messages)
-
 
 
 class LSTMGC_submodule(nn.Module):
