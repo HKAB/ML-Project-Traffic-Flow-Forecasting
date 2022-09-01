@@ -666,5 +666,3 @@ def predict_and_save_results_astgcn_full(net, data_loader, data_target_tensor, g
         print('all MAPE: %.2f' % (mape))
         excel_list.extend([mae, rmse, mape])
         print(excel_list)
-
-
