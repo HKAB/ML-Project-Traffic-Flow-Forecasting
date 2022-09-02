@@ -175,7 +175,10 @@ def train_main():
 
             optimizer.zero_grad()
 
-            outputs = net(encoder_inputs)
+            x1 = encoder_inputs[:, 0, :, :, :].squeeze(dim=1)
+            x2 = encoder_inputs[:, 1, :, :, :].squeeze(dim=1)
+            x3 = encoder_inputs[:, 2, :, :, :].squeeze(dim=1)
+            outputs = net(x1, x2, x3)
 
             if masked_flag:
                 loss = criterion_masked(outputs, labels,missing_value)

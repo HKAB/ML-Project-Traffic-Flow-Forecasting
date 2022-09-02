@@ -3,7 +3,6 @@ import numpy as np
 from torch.autograd import Variable
 import torch
 import typing
-from torch import nn
 import torch.nn.functional as F
 
 

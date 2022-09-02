@@ -106,7 +106,7 @@ def get_sample_indices(data_sequence, num_of_weeks, num_of_days, num_of_hours,
 
     return week_sample, day_sample, hour_sample, target
 
-
+# TODO: Fix this to only generate 1 kind of dataset
 def read_and_generate_dataset(graph_signal_matrix_filename,
                                                      num_of_weeks, num_of_days,
                                                      num_of_hours, num_for_predict,
@@ -304,4 +304,12 @@ graph_signal_matrix_filename = data_config['graph_signal_matrix_filename']
 data = np.load(graph_signal_matrix_filename)
 data['data'].shape
 
-all_data = read_and_generate_dataset(graph_signal_matrix_filename, num_of_weeks, num_of_days, num_of_hours, num_for_predict, points_per_hour=points_per_hour, save=True)
+if num_of_hours > 0:
+    all_data = read_and_generate_dataset(graph_signal_matrix_filename, 0, 0, num_of_hours, num_for_predict, points_per_hour=points_per_hour, save=True)
+
+if num_of_days > 0:
+    all_data = read_and_generate_dataset(graph_signal_matrix_filename, 0, num_of_days, 0, num_for_predict, points_per_hour=points_per_hour, save=True)
+
+if num_of_weeks > 0:
+    all_data = read_and_generate_dataset(graph_signal_matrix_filename, num_of_weeks, 0, 0, num_for_predict, points_per_hour=points_per_hour, save=True)    
+

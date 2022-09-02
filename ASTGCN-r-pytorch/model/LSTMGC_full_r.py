@@ -3,7 +3,6 @@ import numpy as np
 from torch.autograd import Variable
 import torch
 import typing
-from torch import nn
 import torch.nn.functional as F
 
 
@@ -183,7 +182,7 @@ class LSTMGC_submodule(nn.Module):
                 "combination_type": "concat",
                 "activation": None,
             }
-        self.graph_conv = GraphConv(in_feat, hidden_feat, graph_info, **graph_conv_params)
+        self.graph_conv = GraphConv(DEVICE, in_feat, hidden_feat, graph_info, **graph_conv_params)
 
         self.lstm = nn.LSTM(input_size=hidden_feat*2, hidden_size=hidden_feat, num_layers=2,batch_first=True)
         self.dense = nn.Linear(hidden_feat, out_feat)
@@ -259,6 +258,7 @@ class LSTMGC_full_submodule(nn.Module):
         nn.init.uniform_(self.W_w)
 
         self.to(DEVICE)
+        
     def forward(self, x_h, x_d, x_w):
         '''
         :param x_h, x_d, x_w: (B, N_nodes, F_in, T_in)

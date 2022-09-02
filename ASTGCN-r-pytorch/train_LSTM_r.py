@@ -10,7 +10,7 @@ import shutil
 import argparse
 import configparser
 from model.LSTM_r import make_model
-from lib.utils import load_graphdata_channel1, get_adjacency_matrix, evaluate_on_test_mstgcn, compute_val_loss_mstgcn, predict_and_save_results_mstgcn
+from lib.utils import load_graphdata_channel1, compute_val_loss_mstgcn, predict_and_save_results_mstgcn
 from tensorboardX import SummaryWriter
 
 parser = argparse.ArgumentParser()

@@ -179,4 +179,4 @@ cython_debug/
 
 # my custom ignore
 /data/PEMS04*/PEMS04_*
-/experiments
+experiments/
