@@ -227,6 +227,6 @@ def predict_main(global_step, data_loader, data_target_tensor,metric_method, _me
 
 if __name__ == "__main__":
     pass
-    # train_main()
+    train_main()
 
-    predict_main(0, test_loader, test_target_tensor,metric_method, _mean, _std, 'test')
+    # predict_main(0, test_loader, test_target_tensor,metric_method, _mean, _std, 'test')
