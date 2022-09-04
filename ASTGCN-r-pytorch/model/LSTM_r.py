@@ -15,9 +15,10 @@ class LSTM_submodule(nn.Module):
 
         super(LSTM_submodule, self).__init__()
 
-        self.lstm = nn.LSTM(input_size, hidden_size)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers=2)
 
         self.linear = nn.Linear(hidden_size, output_size)
+        self.dropout = nn.Dropout(0.2)
 
         self.DEVICE = DEVICE
 
@@ -34,7 +35,7 @@ class LSTM_submodule(nn.Module):
 
         output, _ = self.lstm(x.reshape(B*N, T, F)) # (B, N_nodes, T_in, F_in) -> (B*N_nodes, T_in, hidden_size)
 
-        output = self.linear(output) # (B*N_nodes, T_in, hidden_size) -> (B*N_nodes, T_in, 1)
+        output = nn.ReLU(self.linear(self.dropout(output))) # (B*N_nodes, T_in, hidden_size) -> (B*N_nodes, T_in, 1)
 
         output = output.reshape(B, N, T)
 
