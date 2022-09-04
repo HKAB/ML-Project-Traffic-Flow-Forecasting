@@ -35,7 +35,7 @@ class LSTM_submodule(nn.Module):
 
         output, _ = self.lstm(x.reshape(B*N, T, F)) # (B, N_nodes, T_in, F_in) -> (B*N_nodes, T_in, hidden_size)
 
-        output = nn.ReLU(self.linear(self.dropout(output))) # (B*N_nodes, T_in, hidden_size) -> (B*N_nodes, T_in, 1)
+        output = nn.ReLU()(self.linear(self.dropout(output))) # (B*N_nodes, T_in, hidden_size) -> (B*N_nodes, T_in, 1)
 
         output = output.reshape(B, N, T)
 
