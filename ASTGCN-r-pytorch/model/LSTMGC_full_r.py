@@ -228,7 +228,7 @@ class LSTMGC_submodule(nn.Module):
         # print(f'gcn_out = {gcn_out.shape}')
         lstm_out, (_, _) = self.lstm(gcn_out)  # lstm_out has shape: (batch_size * num_nodes, input_seq_len, hidden_feat)
         # print(f'lstm_out = {lstm_out.shape}')
-        dense_output = self.dense(lstm_out)  # dense_output has shape: (batch_size * num_nodes, input_seq_len, out_feat)
+        dense_output = self.dense(nn.ReLU()(lstm_out))  # dense_output has shape: (batch_size * num_nodes, input_seq_len, out_feat)
         # print(f'dense_output = {dense_output.shape}')
         # NOTE: RESHAPE
         output = torch.reshape(dense_output, (num_nodes, batch_size, self.input_seq_len, self.out_feat))

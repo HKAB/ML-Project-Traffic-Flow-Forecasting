@@ -95,7 +95,7 @@ def train_main():
     print('start_epoch\t', start_epoch)
     print('epochs\t', epochs)
 
-    criterion = nn.MSELoss().to(DEVICE)
+    criterion = nn.L1Loss().to(DEVICE)
     optimizer = optim.Adam(net.parameters(), lr=learning_rate)
     sw = SummaryWriter(logdir=params_path, flush_secs=5)
     print(net)

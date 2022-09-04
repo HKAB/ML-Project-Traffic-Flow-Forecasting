@@ -68,7 +68,7 @@ params_path = os.path.join('../experiments', dataset_name, folder_dir)
 print('params_path:', params_path)
 
 
-train_loader, train_target_tensor, val_loader, val_target_tensor, test_loader, test_target_tensor, _mean, _std = load_graphdata_channel1(
+train_loader, train_target_tensor, val_loader, val_target_tensor, test_loader, test_target_tensor, _mean, _std = load_fullwhd_graphdata_channel1(
     graph_signal_matrix_filename, num_of_hours,
     num_of_days, num_of_weeks, DEVICE, batch_size)
 
@@ -95,7 +95,7 @@ def train_main():
     print('start_epoch\t', start_epoch)
     print('epochs\t', epochs)
 
-    criterion = nn.MSELoss().to(DEVICE)
+    criterion = nn.L1Loss().to(DEVICE)
     optimizer = optim.Adam(net.parameters(), lr=learning_rate)
     sw = SummaryWriter(logdir=params_path, flush_secs=5)
     print(net)
@@ -134,7 +134,7 @@ def train_main():
 
         # evaluate_on_test_mstgcn(net, test_loader, test_target_tensor, sw, epoch, _mean, _std)
 
-        val_loss = compute_val_loss_mstgcn(net, val_loader, criterion, None, None, sw, epoch)
+        val_loss = compute_val_loss_astgcn_full(net, val_loader, criterion, None, None, sw, epoch)
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -194,7 +194,7 @@ def predict_main(global_step, data_loader, data_target_tensor, _mean, _std, _typ
 
     net.load_state_dict(torch.load(params_filename))
 
-    predict_and_save_results_mstgcn(net, data_loader, data_target_tensor, global_step, None, _mean, _std, params_path, _type)
+    predict_and_save_results_astgcn_full(net, data_loader, data_target_tensor, global_step, None, _mean, _std, params_path, _type)
 
 if __name__ == "__main__":
 
