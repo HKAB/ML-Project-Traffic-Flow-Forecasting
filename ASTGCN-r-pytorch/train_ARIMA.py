@@ -37,7 +37,7 @@ if __name__ == '__main__':
         
         p = mp.Pool(workers)
         
-        chunked_data = data['val_x'][:10, :, 0, :].swapaxes(0, 1)[sensor_idx]
+        chunked_data = data['val_x'][:, :, 0, :].swapaxes(0, 1)[sensor_idx]
 
         # pass the model and its params to a new partial object
         model_ = partial(model)
