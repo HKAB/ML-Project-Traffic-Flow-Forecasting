@@ -8,7 +8,7 @@ import argparse
 warnings.filterwarnings('ignore')
 
 def run_arima(x_past):
-    model = AutoARIMA(season_length=4)
+    model = AutoARIMA(season_length=12)
     model.fit(x_past)
     return model.predict(12)['mean']
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         
         p = mp.Pool(workers)
         
-        chunked_data = data['val_x'][:, :, 0, :].swapaxes(0, 1)[sensor_idx]
+        chunked_data = data['val_x'][:10, :, 0, :].swapaxes(0, 1)[sensor_idx]
 
         # pass the model and its params to a new partial object
         model_ = partial(model)
