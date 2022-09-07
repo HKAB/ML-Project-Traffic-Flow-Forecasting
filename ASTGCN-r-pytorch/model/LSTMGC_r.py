@@ -184,10 +184,10 @@ class LSTMGC_submodule(nn.Module):
                 "activation": None,
             }
         
-        self.graph_conv = GraphConv(DEVICE, in_feat, hidden_feat, graph_info, **graph_conv_params)
+        self.graph_conv = GraphConv(DEVICE, in_feat, out_feat, graph_info, **graph_conv_params)
 
-        self.lstm = nn.LSTM(input_size=hidden_feat*2, hidden_size=hidden_feat, num_layers=2,batch_first=True)
-        self.dense = nn.Linear(hidden_feat, out_feat)
+        self.lstm = nn.LSTM(input_size=out_feat*2, hidden_size=hidden_feat, num_layers=1,batch_first=True)
+        self.dense = nn.Linear(hidden_feat, output_seq_len)
 
         self.input_seq_len = input_seq_len
         self.output_seq_len = output_seq_len
@@ -201,7 +201,6 @@ class LSTMGC_submodule(nn.Module):
         """Forward pass.
 
         Args:
-            inputs: torch.Tensor of shape `(batch_size, input_seq_len, num_nodes, in_feat)`
             inputs: torch.Tensor of shape `(batch_size, num_nodes, in_feat, input_seq_len)`
 
         Returns:
@@ -228,16 +227,17 @@ class LSTMGC_submodule(nn.Module):
         # LSTM takes only 3D tensors as input
         gcn_out = torch.reshape(gcn_out, (batch_size * num_nodes, input_seq_len, out_feat))
         # print(f'gcn_out = {gcn_out.shape}')
-        lstm_out, (_, _) = self.lstm(gcn_out)  # lstm_out has shape: (batch_size * num_nodes, input_seq_len, hidden_feat)
+        _, (lstm_out, _) = self.lstm(gcn_out)  # lstm_out has shape: (1, batch_size * num_nodes, hidden_feat)
+        lstm_out = lstm_out.squeeze()
         # print(f'lstm_out = {lstm_out.shape}')
-        dense_output = self.dense(nn.ReLU()(lstm_out))  # dense_output has shape: (batch_size * num_nodes, input_seq_len, out_feat)
-        # print(f'dense_output = {dense_output.shape}')
+        dense_output = self.dense(nn.ReLU()(lstm_out))  # dense_output has shape: (batch_size * num_nodes, output_seq_len)
+        print(f'dense_output = {dense_output.shape}')
         # NOTE: RESHAPE
-        output = torch.reshape(dense_output, (num_nodes, batch_size, self.input_seq_len, self.out_feat))
-        output = output.permute(1, 2, 0, 3).squeeze(dim=-1) # Tensor of shape (batch_size, input_seq_len, num_nodes)
-        output = output[:, self.input_seq_len-self.output_seq_len:,:]
+        output = torch.reshape(dense_output, (num_nodes, batch_size, self.output_seq_len))
+        # output = output.permute(1, 2, 0, 3).squeeze(dim=-1) # Tensor of shape (batch_size, input_seq_len, num_nodes)
+        # output = output[:, self.input_seq_len-self.output_seq_len:,:]
 
-        output = output.permute(0, 2, 1) # (batch_size, num_nodes, input_seq_len)
+        output = output.permute(1, 0, 2) # (batch_size, num_nodes, output_seq_len)
         # print(f'out = {output.shape}')
         return output
 

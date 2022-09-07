@@ -59,6 +59,7 @@ num_of_days = int(training_config['num_of_days'])
 num_of_hours = int(training_config['num_of_hours'])
 time_strides = num_of_hours
 in_channels = int(training_config['in_channels'])
+out_feat = int(training_config['out_feat'])
 loss_function = training_config['loss_function']
 metric_method = training_config['metric_method']
 missing_value = float(training_config['missing_value'])
@@ -79,7 +80,7 @@ adj_mx, distance_mx = get_adjacency_matrix(adj_filename, num_of_vertices, id_fil
 
 # in_feat = out_feat
 net = make_model(
-    DEVICE, in_channels, in_channels, hidden_feat, 
+    DEVICE, in_channels, out_feat, hidden_feat, 
     adj_mx, num_for_predict, len_input, num_of_vertices
     )
 
