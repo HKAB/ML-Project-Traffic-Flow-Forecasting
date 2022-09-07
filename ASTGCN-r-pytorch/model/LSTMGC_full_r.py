@@ -43,7 +43,8 @@ class GraphConv(nn.Module):
         self.graph_info = graph_info
         self.aggregation_type = aggregation_type
         self.combination_type = combination_type
-        self.weight = Variable(torch.nn.init.xavier_uniform_(torch.Tensor(in_feat, out_feat)),requires_grad=True).to(DEVICE)
+        self.weight1 = Variable(torch.nn.init.xavier_uniform_(torch.Tensor(in_feat, out_feat)),requires_grad=True).to(DEVICE)
+        self.weight2 = Variable(torch.nn.init.xavier_uniform_(torch.Tensor(in_feat, out_feat)),requires_grad=True).to(DEVICE)
         self.activation = activation
         self.DEVICE = DEVICE
     def aggregate(self, neighbour_representations: torch.Tensor):
@@ -115,7 +116,7 @@ class GraphConv(nn.Module):
             segment_ids = segment_ids.repeat_interleave(s).view(segment_ids.shape[0], *data.shape[1:])
         output = torch.gather(data, 0, segment_ids)
         return output
-    def compute_nodes_representation(self, features: torch.Tensor):
+    def compute_nodes_representation(self, features: torch.Tensor, weight: torch.Tensor):
         """Computes each node's representation.
 
         The nodes' representations are obtained by multiplying the features tensor with
@@ -128,13 +129,13 @@ class GraphConv(nn.Module):
         Returns:
             A tensor of shape `(num_nodes, batch_size, input_seq_len, out_feat)`
         """
-        return torch.matmul(features.float(), self.weight.float()) 
-    def compute_aggregated_messages(self, features: torch.Tensor):
+        return torch.matmul(features.float(), weight.float()) 
+    def compute_aggregated_messages(self, features: torch.Tensor, weight: torch.Tensor):
         # print(features.shape, self.graph_info.edges[1].shape)
         idx = self.graph_info.edges[1].to(torch.int64)
         neighbour_representations = self.gather_(features.float(), idx)
         aggregated_messages = self.aggregate(neighbour_representations)
-        return torch.matmul(aggregated_messages, self.weight)
+        return torch.matmul(aggregated_messages, weight)
 
     def update(self, nodes_representation: torch.Tensor, aggregated_messages: torch.Tensor):
         if self.combination_type == "concat":
@@ -154,9 +155,10 @@ class GraphConv(nn.Module):
         Returns:
             A tensor of shape `(num_nodes, batch_size, input_seq_len, out_feat)`
         """
-        nodes_representation = self.compute_nodes_representation(x)
-        aggregated_messages = self.compute_aggregated_messages(x)
+        nodes_representation = self.compute_nodes_representation(x, self.weight1)
+        aggregated_messages = self.compute_aggregated_messages(x, self.weight2)
         return self.update(nodes_representation, aggregated_messages)
+
 
 
 class LSTMGC_submodule(nn.Module):
@@ -239,6 +241,7 @@ class LSTMGC_submodule(nn.Module):
         output = output.permute(1, 0, 2) # (batch_size, num_nodes, output_seq_len)
         # print(f'out = {output.shape}')
         return output
+
 
 class LSTMGC_full_submodule(nn.Module):
     def __init__(   self, DEVICE, in_channels, out_feat, 

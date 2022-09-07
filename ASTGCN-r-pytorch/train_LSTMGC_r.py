@@ -120,7 +120,7 @@ def train_main():
     elif loss_function == 'rmse':
         criterion = nn.MSELoss().to(DEVICE)
         masked_flag= 0
-    optimizer = optim.SGD(net.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(net.parameters(), lr=learning_rate)
     sw = SummaryWriter(logdir=params_path, flush_secs=5)
     print(net)
 
